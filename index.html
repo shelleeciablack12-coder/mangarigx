@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MangaRigX - Your Manga Reading Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-logo">
+                <span class="logo-icon">📖</span> MangaRigX
+            </a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#" class="nav-link active">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" id="genreLink">Genres</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" id="favoritesLink">Favorites</a></li>
+            </ul>
+            <div class="search-bar">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Search manga..."
+                    autocomplete="off"
+                >
+                <div class="search-results" id="searchResults" style="display:none;"></div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section id="heroSection" class="hero">
+            <h1>Discover Your Next Favorite Manga</h1>
+            <p>Browse thousands of mangas</p>
+        </section>
+
+        <section id="filtersSection" class="filters">
+            <div class="filter-group">
+                <label for="statusFilter">Status:</label>
+                <select id="statusFilter">
+                    <option value="">All Statuses</option>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="completed">Completed</option>
+                    <option value="hiatus">Hiatus</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="sortFilter">Sort by:</label>
+                <select id="sortFilter">
+                    <option value="latestChapter">Latest Chapter</option>
+                    <option value="rating">Rating</option>
+                    <option value="name">Title (A-Z)</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="request-section">
+            <div class="request-card">
+                <div class="request-header">
+                    <h2>Request</h2>
+                    <p>Have a request? Tell me what manga or feature you want or chapters, and I’ll do my best to add it or remove it.</p>
+                </div>
+                <form id="requestForm" class="request-form">
+                    <input type="text" id="requestName" class="request-input" placeholder="Your name (optional)">
+                    <input type="email" id="requestEmail" class="request-input" placeholder="Your email (optional)">
+                    <textarea id="requestMessage" class="request-textarea" placeholder="Describe your request here..." required></textarea>
+                    <div class="request-actions">
+                        <button type="submit" class="request-btn">Send Request</button>
+                        <a href="mailto:contact@mangarigx.com?subject=MangaRigX%20Request" class="request-contact">Contact via Email</a>
+                    </div>
+                </form>
+                <div class="contact-info">
+                    <p>Or contact directly:</p>
+                    <p><strong>Email:</strong> <a href="mailto:contact@mangarigx.com">contact@mangarigx.com</a></p>
+                    <p><strong>Phone:</strong> <a href="tel:+15551234567">+1 (555) 123-4567</a></p>
+                </div>
+            </div>
+        </section>
+
+        <div class="loading-spinner" id="loadingSpinner" style="display:none;">
+            <div class="spinner"></div>
+            <p>Loading manga...</p>
+        </div>
+
+        <section id="mangaGrid" class="manga-grid">
+            <!-- Manga items will be inserted here -->
+        </section>
+
+        <div class="pagination">
+            <button id="prevBtn" class="pagination-btn" style="display:none;">← Previous</button>
+            <span id="pageInfo"></span>
+            <button id="nextBtn" class="pagination-btn" style="display:none;">Next →</button>
+        </div>
+
+        <section class="storage-actions-section">
+            <div class="storage-actions">
+                <button id="continueReadingBtn" class="storage-action-btn">Continue reading</button>
+                <button id="bookmarksBtn" class="storage-action-btn">Bookmarks</button>
+                <button id="recentlyViewedBtn" class="storage-action-btn">Recently viewed</button>
+            </div>
+            <div id="storagePopup" class="storage-popup hidden"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 MangaRigX | Made for manga lovers</p>
+    </footer>
+
+    <script src="api-client.js"></script>
+    <script src="ui-manager.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

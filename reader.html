@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reader - MangaRigX</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="reader-mode">
+    <nav class="reader-navbar">
+        <div class="reader-nav-content">
+            <a href="#" id="backBtn" class="nav-back">← Back</a>
+            <span id="readerTitle" class="reader-title"></span>
+            <div class="reader-controls">
+                <button id="togglePanel" class="control-btn" title="Toggle reader panel">☰</button>
+                <button id="fullscreenBtn" class="control-btn" title="Fullscreen">⛶</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="reader-container">
+        <main id="readerContent" class="reader-content">
+            <!-- Chapter pages will be loaded here -->
+        </main>
+
+        <aside id="readerPanel" class="reader-panel">
+            <div class="panel-header">
+                <h3>Chapter Pages</h3>
+            </div>
+
+            <div class="reading-mode">
+                <label>Reading Mode:</label>
+                <select id="readingModeSelect">
+                    <option value="vertical">Vertical (Default)</option>
+                    <option value="horizontal">Horizontal Scroll</option>
+                    <option value="single">Single Page</option>
+                </select>
+            </div>
+
+            <div class="chapter-navigation">
+                <div class="nav-buttons">
+                    <button id="prevChapterBtn" class="nav-btn">← Previous</button>
+                    <button id="nextChapterBtn" class="nav-btn">Next →</button>
+                </div>
+                <div class="chapter-info" id="chapterInfo"></div>
+            </div>
+
+            <div class="pages-list">
+                <div class="pages-header">
+                    <span>Pages</span>
+                    <span id="pageCount"></span>
+                </div>
+                <ul id="pagesList" class="pages-list-items">
+                    <!-- Pages will be inserted here -->
+                </ul>
+            </div>
+
+            <div class="reader-settings">
+                <label>
+                    <input type="checkbox" id="darkModeToggle"> Dark Mode
+                </label>
+                <label>
+                    <input type="checkbox" id="autoNextToggle"> Auto Next Chapter
+                </label>
+                <label>
+                    <input type="range" id="brightnessSlider" min="50" max="150" value="100"> Brightness
+                </label>
+            </div>
+        </aside>
+    </div>
+
+    <div class="loading-spinner" id="readerLoading" style="display:none;">
+        <div class="spinner"></div>
+        <p>Loading chapter pages...</p>
+    </div>
+
+    <script src="api-client.js"></script>
+    <script src="ui-manager.js"></script>
+    <script src="reader.js"></script>
+</body>
+</html>

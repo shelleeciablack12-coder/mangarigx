@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MangaRigX Admin Requests</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main id="adminContent" class="container">
+        <section class="request-section">
+            <div class="request-card">
+                <div class="request-header">
+                    <h2>Admin Request Inbox</h2>
+                    <p>This hidden page displays requests saved in localStorage from the homepage request form.</p>
+                </div>
+                <div id="adminRequestsList" class="admin-requests-list"></div>
+                <div class="request-actions">
+                    <button id="clearRequestsBtn" class="request-btn">Clear All Saved Requests</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="cacheManagementSection" class="cache-section">
+            <div class="cache-card">
+                <div class="cache-header">
+                    <h2>⚡ Performance Cache Management</h2>
+                    <p>Monitor and manage the API response cache to optimize performance.</p>
+                </div>
+                
+                <div id="cacheStatsDisplay" class="cache-stats">
+                    <div class="cache-loading">Loading cache stats...</div>
+                </div>
+
+                <div class="cache-actions">
+                    <div class="cache-action-group">
+                        <h3>Cache Controls</h3>
+                        <button id="clearCacheBtn" class="cache-btn cache-btn-danger">Clear All Cache</button>
+                        <button id="clearMangaCacheBtn" class="cache-btn cache-btn-warning">Clear Manga Cache</button>
+                        <button id="clearChapterCacheBtn" class="cache-btn cache-btn-warning">Clear Chapter Cache</button>
+                        <button id="resetStatsBtn" class="cache-btn cache-btn-info">Reset Statistics</button>
+                    </div>
+                    <div class="cache-info">
+                        <h4>Cache Timeouts:</h4>
+                        <ul>
+                            <li>Manga Lists: 60 minutes</li>
+                            <li>Manga Details: 60 minutes</li>
+                            <li>Chapters: 30 minutes</li>
+                            <li>Chapter Pages: 24 hours</li>
+                            <li>Search Results: 15 minutes</li>
+                            <li>Tags: 24 hours</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 MangaRigX | Made for manga lovers</p>
+    </footer>
+
+    <script src="api-client.js"></script>
+    <script src="ui-manager.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga Details - MangaRigX</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-logo">
+                <span class="logo-icon">📖</span> MangaRigX
+            </a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" id="genreLink">Genres</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" id="favoritesLink">Favorites</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="manga-detail" id="mangaDetail">
+            <div class="detail-header">
+                <a href="#" id="detailBackBtn" class="nav-back">← Back</a>
+                <div class="cover-section">
+                    <img id="mangaCover" src="" alt="Manga Cover" class="manga-cover">
+                    <button id="favoriteBtn" class="favorite-btn">♡ Add to Favorites</button>
+                </div>
+                <div class="info-section">
+                    <h1 id="mangaTitle"></h1>
+                    <div class="meta-info">
+                        <div class="meta-item">
+                            <span class="label">Status:</span>
+                            <span id="mangaStatus" class="status-badge"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">Author:</span>
+                            <span id="mangaAuthor"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">Artist:</span>
+                            <span id="mangaArtist"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">Year:</span>
+                            <span id="mangaYear"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">Rating:</span>
+                            <span id="mangaRating">⭐ Not rated</span>
+                        </div>
+                    </div>
+                    <div id="genresTags" class="genres-tags"></div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h2>Synopsis</h2>
+                <p id="mangaSynopsis"></p>
+            </div>
+
+            <div class="detail-section">
+                <h2>Chapters</h2>
+                <div class="chapters-filter">
+                    <input 
+                        type="text" 
+                        id="chapterSearch" 
+                        placeholder="Search chapter..." 
+                        class="chapter-search"
+                    >
+                    <select id="chapterSort">
+                        <option value="latest">Latest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="number">By Chapter Number</option>
+                    </select>
+                </div>
+                <div class="loading-spinner" id="chaptersLoading" style="display:none;">
+                    <div class="spinner"></div>
+                </div>
+                <ul id="chaptersList" class="chapters-list">
+                    <!-- Chapters will be inserted here -->
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 MangaRigX | Made for manga lovers</p>
+    </footer>
+
+    <script src="api-client.js"></script>
+    <script src="ui-manager.js"></script>
+    <script src="manga-detail.js"></script>
+</body>
+</html>

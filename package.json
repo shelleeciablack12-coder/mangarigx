@@ -1,0 +1,26 @@
+{
+  "name": "mangarigx",
+  "version": "1.0.0",
+  "description": "A modern, lightweight manga reading web application built with vanilla JavaScript and powered by the MangaDex API. Browse, search, and read manga in a smooth, organized way without relying on multiple messy systems or a backend.",
+  "main": "admin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shelleeciablack12-coder/MangaRigX.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/shelleeciablack12-coder/MangaRigX/issues"
+  },
+  "homepage": "https://github.com/shelleeciablack12-coder/MangaRigX#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "node-fetch": "^3.3.2"
+  }
+}
