@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MangaRigX - Your Manga Reading Platform</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -115,6 +120,8 @@
         <p>&copy; 2026 MangaRigX | Made for manga lovers</p>
     </footer>
 
+    <script src="db-config.js?v=2"></script>
+    <script src="db-client.js?v=2"></script>
     <script src="api-client.js?v=2"></script>
     <script src="ui-manager.js?v=2"></script>
     <script src="app.js?v=2"></script>

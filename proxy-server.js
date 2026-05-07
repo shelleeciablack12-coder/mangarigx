@@ -3,10 +3,13 @@ const cors = require('cors');
 const https = require('https');
 
 const app = express();
-const PORT = 3001;
+const PORT = 3000;
 
 // Enable CORS for all routes
 app.use(cors());
+
+// Serve static files from current directory
+app.use(express.static('.'));
 
 // Middleware to proxy API requests
 app.use('/api', (req, res) => {
@@ -59,5 +62,5 @@ app.use('/images', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Proxy server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });

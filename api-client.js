@@ -5,7 +5,7 @@
 
 const API_BASE = 'https://api.mangadex.org';
 const MANGADEX_COVERS_BASE = 'https://uploads.mangadex.org/covers';
-const USE_CORS_PROXY = true;
+const USE_CORS_PROXY = false; // Changed to false for localhost testing
 const CORS_PROXY = 'https://corsproxy.io/?';
 // Detect if running on GitHub Pages and use the browser-safe Codetabs image proxy
 const IS_GITHUB_PAGES = window.location.hostname.includes('github.io');
@@ -16,6 +16,7 @@ class MangaDexClient {
     constructor() {
         this.cache = new Map();
         this.cacheStats = { hits: 0, misses: 0, stored: 0 };
+        this.dbClient = null;
         
         // Different cache timeouts for different data types
         this.cacheTtl = {
@@ -28,6 +29,17 @@ class MangaDexClient {
             tags: 1000 * 60 * 60 * 24,      // 24 hours - tags don't change often
             default: 1000 * 60 * 30,        // 30 minutes default
         };
+
+        // Initialize database client when available
+        this.initDatabase();
+    }
+
+    async initDatabase() {
+        if (this.dbClient) return;
+        if (window.dbClient) {
+            this.dbClient = window.dbClient;
+            await this.dbClient.init();
+        }
     }
 
     buildUrl(endpoint) {
@@ -163,6 +175,38 @@ class MangaDexClient {
      * Search manga by title
      */
     async searchManga(title, limit = 12) {
+        await this.initDatabase();
+
+        // First, try to get from database cache
+        if (this.dbClient) {
+            const cachedResults = await this.dbClient.getCachedSearchResults(title);
+            if (cachedResults) {
+                console.log('🔍 Using cached search results for:', title);
+                return cachedResults;
+            }
+
+            // Check if we have matching manga in permanent library
+            const libraryResults = await this.dbClient.searchMangaInLibrary(title);
+            if (libraryResults.length > 0) {
+                console.log('📚 Found manga in library for:', title);
+                // Convert library format to MangaDex format for compatibility
+                const formattedResults = libraryResults.map(manga => ({
+                    id: manga.mangadex_id,
+                    type: 'manga',
+                    attributes: {
+                        title: { en: manga.title },
+                        description: { en: manga.description },
+                        status: manga.status,
+                        tags: manga.tags || []
+                    },
+                    relationships: [],
+                    coverUrl: manga.cover_url
+                }));
+                return { data: formattedResults };
+            }
+        }
+
+        // Fallback to MangaDex API
         const params = new URLSearchParams();
         params.append('title', title);
         params.append('limit', limit);
@@ -173,18 +217,90 @@ class MangaDexClient {
         params.append('contentRating[]', 'suggestive');
         params.append('contentRating[]', 'erotica');
 
-        return this.fetch(`/manga?${params}`, {}, 'search');
+        const result = await this.fetch(`/manga?${params}`, {}, 'search');
+
+        // Save to databases if available
+        if (this.dbClient && result?.data) {
+            // Cache search results in Firestore
+            await this.dbClient.cacheSearchResults(title, result);
+
+            // Save individual manga to Supabase library
+            for (const manga of result.data) {
+                const mangaData = this.formatMangaForDB(manga);
+                await this.dbClient.saveMangaToLibrary(mangaData);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Format MangaDex manga data for database storage
+     */
+    formatMangaForDB(manga) {
+        const attributes = manga.attributes || {};
+        const relationships = manga.relationships || [];
+
+        // Get cover URL
+        let coverUrl = null;
+        const coverRel = relationships.find(rel => rel.type === 'cover_art');
+        if (coverRel && coverRel.attributes?.fileName) {
+            coverUrl = `${MANGADEX_COVERS_BASE}/${manga.id}/${coverRel.attributes.fileName}`;
+        }
+
+        return {
+            id: manga.id,
+            title: attributes.title?.en || attributes.title?.ja || 'Unknown Title',
+            description: attributes.description?.en || attributes.description?.ja || '',
+            tags: attributes.tags?.map(tag => tag.attributes?.name?.en).filter(Boolean) || [],
+            status: attributes.status || 'unknown',
+            coverUrl
+        };
     }
 
     /**
      * Get detailed manga information
      */
     async getMangaDetails(mangaId) {
+        await this.initDatabase();
+
+        // First, try to get from database
+        if (this.dbClient) {
+            const libraryManga = await this.dbClient.getMangaFromLibrary(mangaId);
+            if (libraryManga) {
+                console.log('📚 Using manga from library:', libraryManga.title);
+                // Convert back to MangaDex format for compatibility
+                return {
+                    data: {
+                        id: libraryManga.mangadex_id,
+                        type: 'manga',
+                        attributes: {
+                            title: { en: libraryManga.title },
+                            description: { en: libraryManga.description },
+                            status: libraryManga.status,
+                            tags: libraryManga.tags?.map(tag => ({ attributes: { name: { en: tag } } })) || []
+                        },
+                        relationships: [],
+                        coverUrl: libraryManga.cover_url
+                    }
+                };
+            }
+        }
+
+        // Fallback to MangaDex API
         const params = new URLSearchParams();
         params.append('includes[]', 'author');
         params.append('includes[]', 'artist');
         params.append('includes[]', 'cover_art');
-        return this.fetch(`/manga/${mangaId}?${params}`, {}, 'mangaDetails');
+        const result = await this.fetch(`/manga/${mangaId}?${params}`, {}, 'mangaDetails');
+
+        // Save to database if available
+        if (this.dbClient && result?.data) {
+            const mangaData = this.formatMangaForDB(result.data);
+            await this.dbClient.saveMangaToLibrary(mangaData);
+        }
+
+        return result;
     }
 
     /**

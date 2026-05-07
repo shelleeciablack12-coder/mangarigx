@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/shelleeciablack12-coder/MangaRigX#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "firebase": "^10.7.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "node-fetch": "^3.3.2"

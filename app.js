@@ -15,6 +15,11 @@ class MangaApp {
     }
 
     async init() {
+        // Initialize database client
+        if (window.dbClient) {
+            await window.dbClient.init();
+        }
+
         this.setupEventListeners();
         this.setupRequestForm();
         this.setupStorageButtons();

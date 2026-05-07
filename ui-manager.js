@@ -27,7 +27,20 @@ class UIManager {
     /**
      * Navigate to manga detail page
      */
-    navigateToManga(mangaId) {
+    async navigateToManga(mangaId) {
+        // Save to recently viewed if database is available
+        if (window.dbClient && window.mangaDexClient) {
+            try {
+                const mangaDetails = await window.mangaDexClient.getMangaDetails(mangaId);
+                if (mangaDetails?.data) {
+                    const mangaData = window.mangaDexClient.formatMangaForDB(mangaDetails.data);
+                    await window.dbClient.saveRecentlyViewed(mangaData);
+                }
+            } catch (error) {
+                console.error('Error saving recently viewed:', error);
+            }
+        }
+
         window.location.href = `manga-detail.html?id=${mangaId}`;
     }
 
