@@ -124,7 +124,8 @@ class UIManager {
         if (!img.dataset.fallbacked && img.dataset.mangaId && img.dataset.fileName) {
             img.dataset.fallbacked = 'true';
             img.onerror = null;
-            img.src = mangaDexClient.getCoverUrl(img.dataset.mangaId, img.dataset.fileName, img.dataset.size || 'medium', false);
+            const retryUseProxy = IS_GITHUB_PAGES;
+            img.src = mangaDexClient.getCoverUrl(img.dataset.mangaId, img.dataset.fileName, img.dataset.size || 'medium', retryUseProxy);
             img.onerror = () => {
                 img.onerror = null;
                 img.src = 'https://via.placeholder.com/180x250?text=No+Cover';
