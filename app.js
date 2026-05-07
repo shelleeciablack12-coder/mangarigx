@@ -10,6 +10,7 @@ class MangaApp {
         this.currentFilter = {};
         this.totalResults = 0;
         this.isLoading = false;
+        this.genres = [];
         this.init();
     }
 
@@ -17,6 +18,7 @@ class MangaApp {
         this.setupEventListeners();
         this.setupRequestForm();
         this.setupStorageButtons();
+        await this.loadGenres();
         await this.loadManga();
     }
 
@@ -306,6 +308,12 @@ class MangaApp {
             this.currentFilter.status = statusFilter.value;
         }
 
+        // Handle genre filter from active button
+        const activeGenreBtn = document.querySelector('.genre-btn.active');
+        if (activeGenreBtn && activeGenreBtn.dataset.genreId && activeGenreBtn.dataset.genreId !== '') {
+            this.currentFilter.genre = activeGenreBtn.dataset.genreId;
+        }
+
         // Handle sort options
         if (sortFilter && sortFilter.value && sortFilter.value !== 'default') {
             const sortMap = {
@@ -428,6 +436,50 @@ class MangaApp {
             }
             uiManager.hideLoading();
         }
+    }
+
+    async loadGenres() {
+        try {
+            const response = await mangaDexClient.getTags();
+            if (response.data) {
+                // Filter for genre tags (exclude content warning tags)
+                this.genres = response.data
+                    .filter(tag => tag.attributes.group === 'genre')
+                    .sort((a, b) => a.attributes.name.en.localeCompare(b.attributes.name.en));
+                
+                this.populateGenreButtons();
+            }
+        } catch (error) {
+            console.error('Failed to load genres:', error);
+        }
+    }
+
+    populateGenreButtons() {
+        const container = document.getElementById('genreButtonsContainer');
+        if (!container) return;
+
+        const allGenresBtn = `<button class="genre-btn active" data-genre-id="">All Genres</button>`;
+        const genreButtons = this.genres
+            .map(genre => `<button class="genre-btn" data-genre-id="${genre.id}">${genre.attributes.name.en}</button>`)
+            .join('');
+        
+        container.innerHTML = allGenresBtn + genreButtons;
+
+        // Add click handlers
+        const buttons = container.querySelectorAll('.genre-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                buttons.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+                // Scroll button into view
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                // Update filters and load manga
+                this.currentPage = 0;
+                this.updateFilters();
+            });
+        });
     }
 
     displayMangaGrid(mangaList) {

@@ -143,8 +143,16 @@ class MangaDexClient {
         params.append('contentRating[]', 'suggestive');
         params.append('contentRating[]', 'erotica');
         
-        // Add any additional filters
-        for (const [key, value] of Object.entries(filters)) {
+        // Handle special filters
+        const { genre, ...otherFilters } = filters;
+        
+        // Handle genre filter
+        if (genre) {
+            params.append('includedTags[]', genre);
+        }
+        
+        // Add any other additional filters
+        for (const [key, value] of Object.entries(otherFilters)) {
             if (value) params.append(key, value);
         }
 
