@@ -24,7 +24,7 @@ class ChapterReader {
     async init() {
         if (!this.chapterId || !this.mangaId) {
             uiManager.showNotification('Invalid chapter or manga ID', 'error');
-            window.location.href = '/';
+            window.location.href = 'index.html';
             return;
         }
 

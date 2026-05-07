@@ -15,7 +15,7 @@ class MangaDetailPage {
     async init() {
         if (!this.mangaId) {
             uiManager.showNotification('Invalid manga ID', 'error');
-            window.location.href = '/';
+            window.location.href = 'index.html';
             return;
         }
 
@@ -54,7 +54,7 @@ class MangaDetailPage {
                 if (window.history.length > 1) {
                     window.history.back();
                 } else {
-                    window.location.href = '/';
+                    window.location.href = 'index.html';
                 }
             });
         }
