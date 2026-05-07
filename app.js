@@ -333,6 +333,7 @@ class MangaApp {
                             alt="${title}"
                             class="search-result-thumb"
                             loading="lazy"
+                            crossorigin="anonymous"
                             data-manga-id="${coverInfo?.mangaId || ''}"
                             data-file-name="${coverInfo?.fileName || ''}"
                             data-size="small"

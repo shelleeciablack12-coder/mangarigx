@@ -188,6 +188,7 @@ class UIManager {
                     alt="${title}"
                     class="manga-card-cover"
                     loading="lazy"
+                    crossorigin="anonymous"
                     data-manga-id="${coverInfo?.mangaId || ''}"
                     data-file-name="${coverInfo?.fileName || ''}"
                     data-size="medium"
