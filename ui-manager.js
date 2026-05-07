@@ -121,7 +121,17 @@ class UIManager {
      * Fallback cover image handler
      */
     fallbackCoverImage(img) {
-        // Since we're using a local proxy, don't try external proxies
+        if (!img.dataset.fallbacked && img.dataset.mangaId && img.dataset.fileName) {
+            img.dataset.fallbacked = 'true';
+            img.onerror = null;
+            img.src = mangaDexClient.getCoverUrl(img.dataset.mangaId, img.dataset.fileName, img.dataset.size || 'medium', false);
+            img.onerror = () => {
+                img.onerror = null;
+                img.src = 'https://via.placeholder.com/180x250?text=No+Cover';
+            };
+            return;
+        }
+
         img.onerror = null;
         img.src = 'https://via.placeholder.com/180x250?text=No+Cover';
     }
@@ -473,5 +483,5 @@ class UIManager {
 }
 
 // Create singleton instance
-const uiManager = new UIManager();
-uiManager.addGlobalStyles();
+window.uiManager = new UIManager();
+window.uiManager.addGlobalStyles();

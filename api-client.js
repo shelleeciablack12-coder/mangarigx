@@ -3,12 +3,12 @@
  * Handles all API calls to MangaDex for manga data, chapters, and images
  */
 
-const API_BASE = 'http://localhost:3001/api';
-const MANGADEX_COVERS_BASE = 'http://localhost:3001/images/covers';
-const USE_CORS_PROXY = false; // Using local proxy server
-const CORS_PROXY = 'https://api.allorigins.win/get?url=';
-const USE_IMAGE_PROXY = false;
-const IMAGE_PROXY = 'https://images.weserv.nl/?url=';
+const API_BASE = 'https://api.mangadex.org';
+const MANGADEX_COVERS_BASE = 'https://uploads.mangadex.org/covers';
+const USE_CORS_PROXY = true;
+const CORS_PROXY = 'https://corsproxy.io/?';
+const USE_IMAGE_PROXY = false; // Use direct MangaDex images by default for production and GitHub Pages
+const IMAGE_PROXY = 'http://localhost:3001/images';
 
 class MangaDexClient {
     constructor() {
@@ -251,24 +251,21 @@ class MangaDexClient {
             return '';
         }
 
-        // Determine file extension based on size
-        let finalFileName;
-        switch (size) {
-            case 'small':
-            case 'medium':
-            case 'large':
-                // MangaDex doesn't provide size variants, use original filename
-                finalFileName = fileName;
-                break;
-            default:
-                finalFileName = fileName;
-        }
+        // Use the cover image filename directly. MangaDex uploads do not reliably support custom size suffixes.
+        const finalFileName = fileName;
 
         // Build the URL
         const imageUrl = `${MANGADEX_COVERS_BASE}/${encodeURIComponent(mangaId)}/${encodeURIComponent(finalFileName)}`;
 
         // Apply proxy if requested
-        return useProxy ? `${IMAGE_PROXY}${encodeURIComponent(imageUrl)}` : imageUrl;
+        if (useProxy) {
+            if (IMAGE_PROXY.startsWith('http')) {
+                return `${IMAGE_PROXY}/covers/${encodeURIComponent(mangaId)}/${encodeURIComponent(finalFileName)}`;
+            }
+            return `${IMAGE_PROXY}${encodeURIComponent(imageUrl)}`;
+        }
+
+        return imageUrl;
     }
 
     /**
