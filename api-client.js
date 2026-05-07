@@ -5,7 +5,7 @@
 
 const API_BASE = 'https://api.mangadex.org';
 const MANGADEX_COVERS_BASE = 'https://uploads.mangadex.org/covers';
-const USE_CORS_PROXY = false; // Changed to false for localhost testing
+const USE_CORS_PROXY = true; // Re-enabled for localhost CORS issues
 const CORS_PROXY = 'https://corsproxy.io/?';
 // Detect if running on GitHub Pages and use the browser-safe Codetabs image proxy
 const IS_GITHUB_PAGES = window.location.hostname.includes('github.io');
