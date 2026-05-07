@@ -20,7 +20,22 @@
 
     <div class="reader-container">
         <main id="readerContent" class="reader-content">
+            <!-- Chapter top navigation -->
+            <div class="chapter-nav-top" id="chapterNavTop">
+                <button id="prevChapterBtnTop" class="chapter-nav-btn prev-btn">← Previous Chapter</button>
+                <span id="chapterInfoTop" class="chapter-info-text"></span>
+                <button id="nextChapterBtnTop" class="chapter-nav-btn next-btn">Next Chapter →</button>
+            </div>
+            
             <!-- Chapter pages will be loaded here -->
+            <div id="readerPages" class="reader-pages"></div>
+            
+            <!-- Chapter bottom navigation -->
+            <div class="chapter-nav-bottom" id="chapterNavBottom">
+                <button id="prevChapterBtnBottom" class="chapter-nav-btn prev-btn">← Previous Chapter</button>
+                <span id="chapterInfoBottom" class="chapter-info-text"></span>
+                <button id="nextChapterBtnBottom" class="chapter-nav-btn next-btn">Next Chapter →</button>
+            </div>
         </main>
 
         <aside id="readerPanel" class="reader-panel">
@@ -35,14 +50,6 @@
                     <option value="horizontal">Horizontal Scroll</option>
                     <option value="single">Single Page</option>
                 </select>
-            </div>
-
-            <div class="chapter-navigation">
-                <div class="nav-buttons">
-                    <button id="prevChapterBtn" class="nav-btn">← Previous</button>
-                    <button id="nextChapterBtn" class="nav-btn">Next →</button>
-                </div>
-                <div class="chapter-info" id="chapterInfo"></div>
             </div>
 
             <div class="pages-list">

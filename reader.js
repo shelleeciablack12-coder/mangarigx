@@ -44,16 +44,22 @@ class ChapterReader {
         }
 
         // Navigation buttons
-        const prevChapterBtn = document.getElementById('prevChapterBtn');
-        const nextChapterBtn = document.getElementById('nextChapterBtn');
+        const prevChapterBtnTop = document.getElementById('prevChapterBtnTop');
+        const nextChapterBtnTop = document.getElementById('nextChapterBtnTop');
+        const prevChapterBtnBottom = document.getElementById('prevChapterBtnBottom');
+        const nextChapterBtnBottom = document.getElementById('nextChapterBtnBottom');
 
-        if (prevChapterBtn) {
-            prevChapterBtn.addEventListener('click', () => this.loadPreviousChapter());
-        }
+        [prevChapterBtnTop, prevChapterBtnBottom].forEach((btn) => {
+            if (btn) {
+                btn.addEventListener('click', () => this.loadPreviousChapter());
+            }
+        });
 
-        if (nextChapterBtn) {
-            nextChapterBtn.addEventListener('click', () => this.loadNextChapter());
-        }
+        [nextChapterBtnTop, nextChapterBtnBottom].forEach((btn) => {
+            if (btn) {
+                btn.addEventListener('click', () => this.loadNextChapter());
+            }
+        });
 
         // Reading mode
         const readingModeSelect = document.getElementById('readingModeSelect');
@@ -113,11 +119,15 @@ class ChapterReader {
         // Keyboard navigation
         document.addEventListener('keydown', (e) => this.handleKeyboard(e));
 
-        // Page click navigation
-        const readerContent = document.getElementById('readerContent');
-        if (readerContent) {
-            readerContent.addEventListener('click', (e) => {
-                const rect = readerContent.getBoundingClientRect();
+        // Page click navigation for non-vertical modes
+        const readerPages = document.getElementById('readerPages');
+        if (readerPages) {
+            readerPages.addEventListener('click', (e) => {
+                if (this.readingMode === 'vertical') {
+                    return;
+                }
+
+                const rect = readerPages.getBoundingClientRect();
                 const clickX = e.clientX - rect.left;
                 const midpoint = rect.width / 2;
 
@@ -265,8 +275,9 @@ class ChapterReader {
     }
 
     showUnavailableChapter(message, externalUrl) {
-        const content = document.getElementById('readerContent');
-        const chapterInfo = document.getElementById('chapterInfo');
+        const content = document.getElementById('readerPages');
+        const chapterInfoTop = document.getElementById('chapterInfoTop');
+        const chapterInfoBottom = document.getElementById('chapterInfoBottom');
 
         if (content) {
             content.innerHTML = 
@@ -276,8 +287,12 @@ class ChapterReader {
                 </div>`;
         }
 
-        if (chapterInfo) {
-            chapterInfo.textContent = externalUrl ? 'External chapter. Open in a new tab.' : 'No readable pages available for this chapter.';
+        const unavailableText = externalUrl ? 'External chapter. Open in a new tab.' : 'No readable pages available for this chapter.';
+        if (chapterInfoTop) {
+            chapterInfoTop.textContent = unavailableText;
+        }
+        if (chapterInfoBottom) {
+            chapterInfoBottom.textContent = unavailableText;
         }
     }
 
@@ -289,35 +304,54 @@ class ChapterReader {
     }
 
     updateChapterButtons() {
-        const prevBtn = document.getElementById('prevChapterBtn');
-        const nextBtn = document.getElementById('nextChapterBtn');
+        const prevBtns = [
+            document.getElementById('prevChapterBtnTop'),
+            document.getElementById('prevChapterBtnBottom'),
+        ];
+        const nextBtns = [
+            document.getElementById('nextChapterBtnTop'),
+            document.getElementById('nextChapterBtnBottom'),
+        ];
 
         const prevChapter = this.chapterList[this.currentChapterIndex - 1];
         const nextChapter = this.chapterList[this.currentChapterIndex + 1];
 
-        if (prevBtn) {
+        prevBtns.forEach((btn) => {
+            if (!btn) return;
             if (prevChapter) {
-                prevBtn.disabled = false;
-                prevBtn.textContent = `← ${this.getChapterLabel(prevChapter)}`;
+                btn.disabled = false;
+                btn.textContent = `← ${this.getChapterLabel(prevChapter)}`;
             } else {
-                prevBtn.disabled = true;
-                prevBtn.textContent = '← Previous';
+                btn.disabled = true;
+                btn.textContent = '← Previous Chapter';
             }
-        }
+        });
 
-        if (nextBtn) {
+        nextBtns.forEach((btn) => {
+            if (!btn) return;
             if (nextChapter) {
-                nextBtn.disabled = false;
-                nextBtn.textContent = `${this.getChapterLabel(nextChapter)} →`;
+                btn.disabled = false;
+                btn.textContent = `${this.getChapterLabel(nextChapter)} →`;
             } else {
-                nextBtn.disabled = true;
-                nextBtn.textContent = 'Next →';
+                btn.disabled = true;
+                btn.textContent = 'Next Chapter →';
             }
+        });
+
+        const chapterInfoTop = document.getElementById('chapterInfoTop');
+        const chapterInfoBottom = document.getElementById('chapterInfoBottom');
+        const currentChapterLabel = this.getChapterLabel(this.currentChapter);
+
+        if (chapterInfoTop) {
+            chapterInfoTop.textContent = currentChapterLabel;
+        }
+        if (chapterInfoBottom) {
+            chapterInfoBottom.textContent = currentChapterLabel;
         }
     }
 
     displayPages() {
-        const content = document.getElementById('readerContent');
+        const content = document.getElementById('readerPages');
         if (!content) return;
 
         content.innerHTML = '';
@@ -445,7 +479,7 @@ class ChapterReader {
     }
 
     applyBrightness() {
-        const content = document.getElementById('readerContent');
+        const content = document.getElementById('readerPages');
         if (content) {
             const brightnessValue = this.brightness / 100;
             content.style.filter = `brightness(${brightnessValue})`;
@@ -531,7 +565,7 @@ class ChapterReader {
     nextPage() {
         if (this.readingMode === 'vertical') {
             // In vertical mode, scroll down
-            const content = document.getElementById('readerContent');
+            const content = document.getElementById('readerPages');
             if (content) {
                 const scrollAmount = window.innerHeight * 0.8;
                 content.scrollBy(0, scrollAmount);
@@ -555,7 +589,7 @@ class ChapterReader {
     previousPage() {
         if (this.readingMode === 'vertical') {
             // In vertical mode, scroll up
-            const content = document.getElementById('readerContent');
+            const content = document.getElementById('readerPages');
             if (content) {
                 const scrollAmount = window.innerHeight * 0.8;
                 content.scrollBy(0, -scrollAmount);
