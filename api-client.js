@@ -274,13 +274,7 @@ class MangaDexClient {
 
         // Apply proxy if requested
         if (useProxy) {
-            if (IMAGE_PROXY === CORS_PROXY) {
-                return `${IMAGE_PROXY}${encodeURIComponent(imageUrl)}`;
-            }
-            if (IMAGE_PROXY.startsWith('http')) {
-                return `${IMAGE_PROXY}/covers/${encodeURIComponent(mangaId)}/${encodeURIComponent(finalFileName)}`;
-            }
-            return `${IMAGE_PROXY}${encodeURIComponent(imageUrl)}`;
+            return `${CORS_PROXY}${encodeURIComponent(imageUrl)}`;
         }
 
         return imageUrl;
