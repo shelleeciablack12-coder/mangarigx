@@ -24,19 +24,50 @@ class MangaApp {
         // Manga grid item clicks
         document.addEventListener('click', (e) => {
             const mangaCard = e.target.closest('.manga-card');
-            if (mangaCard) {
+            if (mangaCard && !this.isLoading) {
                 const mangaId = mangaCard.dataset.mangaId;
                 uiManager.navigateToManga(mangaId);
             }
         });
 
-        // Search input
+        // Search input with debounce and visual feedback
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
-            searchInput.addEventListener(
-                'input',
-                uiManager.debounce((e) => this.handleSearch(e), 300)
-            );
+            let searchTimeout;
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                const query = e.target.value.trim();
+                
+                if (!query) {
+                    const searchResults = document.getElementById('searchResults');
+                    if (searchResults) {
+                        searchResults.style.display = 'none';
+                    }
+                    return;
+                }
+                
+                // Add visual feedback while searching
+                const searchResults = document.getElementById('searchResults');
+                if (searchResults) {
+                    searchResults.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-color);"><p>Searching...</p></div>';
+                    searchResults.style.display = 'block';
+                }
+                
+                // Debounce search
+                searchTimeout = setTimeout(() => {
+                    this.handleSearch(e);
+                }, 300);
+            });
+            
+            // Close search results on blur
+            searchInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    const searchResults = document.getElementById('searchResults');
+                    if (searchResults) {
+                        searchResults.style.display = 'none';
+                    }
+                }, 200);
+            });
         }
 
         // Filter changes
@@ -270,18 +301,19 @@ class MangaApp {
 
         this.currentFilter = {};
 
-        if (statusFilter && statusFilter.value) {
+        // Handle status filter
+        if (statusFilter && statusFilter.value && statusFilter.value !== 'all') {
             this.currentFilter.status = statusFilter.value;
         }
 
-        if (sortFilter && sortFilter.value) {
-            // Map sort options to API parameters
+        // Handle sort options
+        if (sortFilter && sortFilter.value && sortFilter.value !== 'default') {
             const sortMap = {
                 latestChapter: { 'order[latestUploadedChapter]': 'desc' },
                 rating: { 'order[rating]': 'desc' },
                 name: { 'order[title]': 'asc' },
             };
-            this.currentFilter = { ...this.currentFilter, ...sortMap[sortFilter.value] };
+            Object.assign(this.currentFilter, sortMap[sortFilter.value] || {});
         }
 
         this.loadManga();
@@ -297,15 +329,14 @@ class MangaApp {
         }
 
         try {
-            uiManager.showLoading();
-            const response = await mangaDexClient.searchManga(query, 10);
-            uiManager.hideLoading();
-
+            const response = await mangaDexClient.searchManga(query, 12);
             this.displaySearchResults(response.data, searchResults);
         } catch (error) {
             console.error('Search error:', error);
-            uiManager.hideLoading();
-            uiManager.showNotification('Search failed. Please try again.', 'error');
+            if (searchResults) {
+                searchResults.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--danger);">Search failed. Please try again.</div>';
+                searchResults.style.display = 'block';
+            }
         }
     }
 
@@ -313,13 +344,13 @@ class MangaApp {
         if (!container) return;
 
         if (results.length === 0) {
-            container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted);">No manga found</div>';
+            container.innerHTML = '<div style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No manga found for your search</div>';
             container.style.display = 'block';
             return;
         }
 
         const html = results
-            .map((manga) => {
+            .map((manga, idx) => {
                 const title = uiManager.getMangaTitle(manga.attributes);
                 const coverInfo = uiManager.getCoverInfoFromManga(manga);
                 const coverUrl = coverInfo
@@ -338,7 +369,7 @@ class MangaApp {
                             data-size="small"
                             onerror="uiManager.fallbackCoverImage(this)"
                         >
-                        <span class="search-result-name">${title}</span>
+                        <span class="search-result-name">${this.truncateText(title, 30)}</span>
                     </div>
                 `;
             })
@@ -349,6 +380,7 @@ class MangaApp {
 
         // Add click handlers
         container.querySelectorAll('.search-result-item').forEach((item) => {
+            item.style.cursor = 'pointer';
             item.addEventListener('click', () => {
                 const mangaId = item.dataset.mangaId;
                 uiManager.navigateToManga(mangaId);
@@ -356,10 +388,21 @@ class MangaApp {
         });
     }
 
+    truncateText(text, maxLength) {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+    }
+
     async loadManga() {
         if (this.isLoading) return;
 
         this.isLoading = true;
+        
+        const grid = document.getElementById('mangaGrid');
+        if (grid) {
+            grid.classList.add('loading');
+        }
+        
         uiManager.showLoading();
 
         try {
@@ -372,11 +415,17 @@ class MangaApp {
             this.totalResults = response.total || 0;
             this.displayMangaGrid(response.data);
             this.updatePaginationButtons();
+            
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error) {
             console.error('Load error:', error);
             uiManager.showNotification('Failed to load manga. Please try again.', 'error');
         } finally {
             this.isLoading = false;
+            if (grid) {
+                grid.classList.remove('loading');
+            }
             uiManager.hideLoading();
         }
     }
@@ -387,7 +436,7 @@ class MangaApp {
 
         if (mangaList.length === 0) {
             grid.innerHTML =
-                '<div style="grid-column: 1/-1; padding: 3rem; text-align: center; color: var(--text-muted);">No manga found. Try different filters.</div>';
+                '<div style="grid-column: 1/-1; padding: 3rem; text-align: center; color: var(--text-muted);">No manga found. Try different filters or search.</div>';
             return;
         }
 
@@ -396,6 +445,9 @@ class MangaApp {
 
         // Lazy load images
         this.setupLazyLoading();
+        
+        // Force reflow to trigger animations
+        void grid.offsetWidth;
     }
 
     setupLazyLoading() {
