@@ -132,6 +132,13 @@ class UIManager {
             return;
         }
 
+        console.debug('fallbackCoverImage: unable to retry cover image, falling back to placeholder', {
+            fallbacked: img.dataset.fallbacked,
+            mangaId: img.dataset.mangaId,
+            fileName: img.dataset.fileName,
+            size: img.dataset.size,
+        });
+
         img.onerror = null;
         img.src = 'https://via.placeholder.com/180x250?text=No+Cover';
     }

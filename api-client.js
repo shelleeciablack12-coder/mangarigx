@@ -215,13 +215,26 @@ class MangaDexClient {
      * Extract cover metadata from manga relationships
      */
     getCoverInfo(manga) {
-        if (!manga || !manga.relationships) return null;
+        if (!manga || !manga.relationships) {
+            console.debug('getCoverInfo: missing manga or relationships', { mangaId: manga?.id, manga });
+            return null;
+        }
 
         const coverRel = manga.relationships.find((relationship) => relationship.type === 'cover_art');
+        if (!coverRel) {
+            console.debug('getCoverInfo: cover_art relationship not found', {
+                mangaId: manga.id,
+                relationshipTypes: manga.relationships.map((relationship) => relationship.type),
+            });
+        }
+
         const fileName = coverRel?.attributes?.fileName || coverRel?.fileName;
         const mangaId = manga.id || this.getMangaIdFromRelationships(manga.relationships);
 
-        if (!fileName || !mangaId) return null;
+        if (!fileName || !mangaId) {
+            console.warn('getCoverInfo: missing cover data', { mangaId, fileName, coverRel });
+            return null;
+        }
 
         return {
             mangaId,
