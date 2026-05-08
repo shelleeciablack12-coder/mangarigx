@@ -252,6 +252,7 @@ class MangaApp {
             ${this.buildStorageList(type, items)}
         `;
 
+        popup.classList.remove('hidden');
         popup.classList.add('visible');
     }
 
@@ -259,6 +260,7 @@ class MangaApp {
         const popup = document.getElementById('storagePopup');
         if (popup) {
             popup.classList.remove('visible');
+            popup.classList.add('hidden');
         }
     }
 
