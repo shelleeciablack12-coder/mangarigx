@@ -502,11 +502,37 @@ class MangaApp {
         const html = mangaList.map((manga) => uiManager.createMangaCard(manga)).join('');
         grid.innerHTML = html;
 
+        // Attach click handlers directly to cards so navigation works consistently.
+        this.attachMangaCardClickHandlers();
+
         // Lazy load images
         this.setupLazyLoading();
         
         // Force reflow to trigger animations
         void grid.offsetWidth;
+    }
+
+    attachMangaCardClickHandlers() {
+        const grid = document.getElementById('mangaGrid');
+        if (!grid) return;
+
+        const cards = grid.querySelectorAll('.manga-card');
+        cards.forEach((card) => {
+            if (card.dataset.clickAttached === 'true') return;
+            card.addEventListener('click', (event) => this.handleMangaCardClick(event));
+            card.dataset.clickAttached = 'true';
+        });
+    }
+
+    handleMangaCardClick(event) {
+        if (this.isLoading) return;
+        const mangaCard = event.currentTarget;
+        if (!mangaCard) return;
+
+        const mangaId = mangaCard.dataset.mangaId;
+        if (!mangaId) return;
+
+        uiManager.navigateToManga(mangaId);
     }
 
     setupLazyLoading() {
