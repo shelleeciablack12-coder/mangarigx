@@ -28,19 +28,24 @@ class UIManager {
      * Navigate to manga detail page
      */
     async navigateToManga(mangaId) {
-        // Save to recently viewed if database is available
+        // Save to recently viewed if database is available (don't wait for it)
         if (window.dbClient && window.mangaDexClient) {
             try {
-                const mangaDetails = await window.mangaDexClient.getMangaDetails(mangaId);
-                if (mangaDetails?.data) {
-                    const mangaData = window.mangaDexClient.formatMangaForDB(mangaDetails.data);
-                    await window.dbClient.saveRecentlyViewed(mangaData);
-                }
+                // Don't await - let it happen in background
+                window.mangaDexClient.getMangaDetails(mangaId).then(details => {
+                    if (details?.data) {
+                        const mangaData = window.mangaDexClient.formatMangaForDB(details.data);
+                        return window.dbClient.saveRecentlyViewed(mangaData);
+                    }
+                }).catch(error => {
+                    console.error('Error saving recently viewed:', error);
+                });
             } catch (error) {
                 console.error('Error saving recently viewed:', error);
             }
         }
 
+        // Navigate immediately
         window.location.href = `manga-detail.html?id=${mangaId}`;
     }
 
